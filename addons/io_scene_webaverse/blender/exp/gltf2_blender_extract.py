@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import numpy as np
-from mathutils import Vector, Quaternion, Matrix
+from mathutils import Vector
 
 from . import gltf2_blender_export_keys
 from ...io.com.gltf2_io_debug import print_console
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_skins
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_skins
 
 
 def extract_primitives(glTF, blender_mesh, library, blender_object, blender_vertex_groups, modifiers, export_settings):

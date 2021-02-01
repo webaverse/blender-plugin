@@ -15,10 +15,10 @@
 import numpy as np
 
 from . import gltf2_blender_export_keys
-from io_scene_gltf2.io.com import gltf2_io
-from io_scene_gltf2.io.com import gltf2_io_constants
-from io_scene_gltf2.io.com import gltf2_io_debug
-from io_scene_gltf2.io.exp import gltf2_io_binary_data
+from io_scene_webaverse.io.com import gltf2_io
+from io_scene_webaverse.io.com import gltf2_io_constants
+from io_scene_webaverse.io.com import gltf2_io_debug
+from io_scene_webaverse.io.exp import gltf2_io_binary_data
 
 
 def gather_primitive_attributes(blender_primitive, export_settings):

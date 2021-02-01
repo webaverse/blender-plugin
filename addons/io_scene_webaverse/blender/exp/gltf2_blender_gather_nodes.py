@@ -17,18 +17,18 @@ import bpy
 from mathutils import Matrix, Quaternion, Vector
 
 from . import gltf2_blender_export_keys
-from io_scene_gltf2.blender.com import gltf2_blender_math
-from io_scene_gltf2.blender.exp.gltf2_blender_gather_cache import cached
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_skins
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_cameras
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_mesh
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_joints
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_lights
+from io_scene_webaverse.blender.com import gltf2_blender_math
+from io_scene_webaverse.blender.exp.gltf2_blender_gather_cache import cached
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_skins
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_cameras
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_mesh
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_joints
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_lights
 from ..com.gltf2_blender_extras import generate_extras
-from io_scene_gltf2.io.com import gltf2_io
-from io_scene_gltf2.io.com import gltf2_io_extensions
-from io_scene_gltf2.io.exp.gltf2_io_user_extensions import export_user_extensions
-from io_scene_gltf2.io.com.gltf2_io_debug import print_console
+from io_scene_webaverse.io.com import gltf2_io
+from io_scene_webaverse.io.com import gltf2_io_extensions
+from io_scene_webaverse.io.exp.gltf2_io_user_extensions import export_user_extensions
+from io_scene_webaverse.io.com.gltf2_io_debug import print_console
 
 
 def gather_node(blender_object, library, blender_scene, dupli_object_parent, export_settings):
@@ -423,8 +423,17 @@ def __gather_trans_rot_scale(blender_object, export_settings):
     sca = __convert_swizzle_scale(sca, export_settings)
 
     if blender_object.instance_type == 'COLLECTION' and blender_object.instance_collection:
-        trans -= __convert_swizzle_location(
+        offset = -__convert_swizzle_location(
             blender_object.instance_collection.instance_offset, export_settings)
+
+        s = Matrix.Diagonal(sca).to_4x4()
+        r = rot.to_matrix().to_4x4() 
+        t = Matrix.Translation(trans).to_4x4()
+        o = Matrix.Translation(offset).to_4x4()
+        m = t @ r @ s @ o
+
+        trans = m.translation
+        
     translation, rotation, scale = (None, None, None)
     trans[0], trans[1], trans[2] = gltf2_blender_math.round_if_near(trans[0], 0.0), gltf2_blender_math.round_if_near(trans[1], 0.0), \
                                    gltf2_blender_math.round_if_near(trans[2], 0.0)

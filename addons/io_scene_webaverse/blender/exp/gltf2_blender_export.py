@@ -17,14 +17,14 @@ import bpy
 import sys
 import traceback
 
-from io_scene_gltf2.blender.com import gltf2_blender_json
-from io_scene_gltf2.blender.exp import gltf2_blender_export_keys
-from io_scene_gltf2.blender.exp import gltf2_blender_gather
-from io_scene_gltf2.blender.exp.gltf2_blender_gltf2_exporter import GlTF2Exporter
-from io_scene_gltf2.io.com.gltf2_io_debug import print_console, print_newline
-from io_scene_gltf2.io.exp import gltf2_io_export
-from io_scene_gltf2.io.exp import gltf2_io_draco_compression_extension
-from io_scene_gltf2.io.exp.gltf2_io_user_extensions import export_user_extensions
+from io_scene_webaverse.blender.com import gltf2_blender_json
+from io_scene_webaverse.blender.exp import gltf2_blender_export_keys
+from io_scene_webaverse.blender.exp import gltf2_blender_gather
+from io_scene_webaverse.blender.exp.gltf2_blender_gltf2_exporter import GlTF2Exporter
+from io_scene_webaverse.io.com.gltf2_io_debug import print_console, print_newline
+from io_scene_webaverse.io.exp import gltf2_io_export
+from io_scene_webaverse.io.exp import gltf2_io_draco_compression_extension
+from io_scene_webaverse.io.exp.gltf2_io_user_extensions import export_user_extensions
 
 
 def save(context, export_settings):
@@ -76,7 +76,7 @@ def __gather_gltf(exporter, export_settings):
     active_scene_idx, scenes, animations = plan['active_scene_idx'], plan['scenes'], plan['animations']
 
     if export_settings['gltf_draco_mesh_compression']:
-        gltf2_io_draco_compression_extension.compress_scene_primitives(scenes, export_settings)
+        gltf2_io_draco_compression_extension.encode_scene_primitives(scenes, export_settings)
         exporter.add_draco_extension()
 
     for idx, scene in enumerate(scenes):

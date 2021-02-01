@@ -13,9 +13,9 @@
 # limitations under the License.
 
 bl_info = {
-    'name': 'glTF 2.0 format',
-    'author': 'Julien Duroure, Scurest, Norbert Nopper, Urs Hanselmann, Moritz Becher, Benjamin Schmithüsen, Jim Eckerlein, and many external contributors',
-    "version": (1, 4, 40),
+    'name': '! a Webaverse Plugin',
+    'author': 'Webaverse',
+    "version": (1, 6, 3),
     'blender': (2, 91, 0),
     'location': 'File > Import-Export',
     'description': 'Import-Export as glTF 2.0',
@@ -73,6 +73,8 @@ extension_panel_unregister_functors = []
 def on_export_format_changed(self, context):
     # Update the file extension when the format (.glb/.gltf) changes
     sfile = context.space_data
+    if sfile is None:
+        return # Avoid error when export from background
     operator = sfile.active_operator
     if operator.bl_idname != "EXPORT_SCENE_OT_gltf":
         return
@@ -89,7 +91,7 @@ class ExportGLTF2_Base:
     # TODO: refactor to avoid boilerplate
 
     def __init__(self):
-        from io_scene_gltf2.io.exp import gltf2_io_draco_compression_extension
+        from io_scene_webaverse.io.com import gltf2_io_draco_compression_extension
         self.is_draco_available = gltf2_io_draco_compression_extension.dll_exists()
 
     bl_options = {'PRESET'}
@@ -98,13 +100,7 @@ class ExportGLTF2_Base:
         name='Format',
         items=(('GLB', 'glTF Binary (.glb)',
                 'Exports a single file, with all data packed in binary form. '
-                'Most efficient and portable, but more difficult to edit later'),
-               ('GLTF_EMBEDDED', 'glTF Embedded (.gltf)',
-                'Exports a single file, with all data packed in JSON. '
-                'Less efficient than binary, but easier to edit later'),
-               ('GLTF_SEPARATE', 'glTF Separate (.gltf + .bin + textures)',
-                'Exports multiple files, with separate JSON, binary and texture data. '
-                'Easiest to edit later')),
+                'Most efficient and portable, but more difficult to edit later')),
         description=(
             'Output format and embedding options. Binary is most efficient, '
             'but JSON (embedded or separate) may be easier to edit later'
@@ -196,6 +192,14 @@ class ExportGLTF2_Base:
         name='Texcoord quantization bits',
         description='Quantization bits for texture coordinate values (0 = no quantization)',
         default=12,
+        min=0,
+        max=30
+    )
+
+    export_draco_color_quantization: IntProperty(
+        name='Color quantization bits',
+        description='Quantization bits for color values (0 = no quantization)',
+        default=10,
         min=0,
         max=30
     )
@@ -471,6 +475,7 @@ class ExportGLTF2_Base:
             export_settings['gltf_draco_position_quantization'] = self.export_draco_position_quantization
             export_settings['gltf_draco_normal_quantization'] = self.export_draco_normal_quantization
             export_settings['gltf_draco_texcoord_quantization'] = self.export_draco_texcoord_quantization
+            export_settings['gltf_draco_color_quantization'] = self.export_draco_color_quantization
             export_settings['gltf_draco_generic_quantization'] = self.export_draco_generic_quantization
         else:
             export_settings['gltf_draco_mesh_compression'] = False
@@ -690,7 +695,7 @@ class GLTF_PT_export_geometry_compression(bpy.types.Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def __init__(self):
-        from io_scene_gltf2.io.exp import gltf2_io_draco_compression_extension
+        from io_scene_webaverse.io.com import gltf2_io_draco_compression_extension
         self.is_draco_available = gltf2_io_draco_compression_extension.dll_exists(quiet=True)
 
     @classmethod
@@ -719,7 +724,8 @@ class GLTF_PT_export_geometry_compression(bpy.types.Panel):
         col = layout.column(align=True)
         col.prop(operator, 'export_draco_position_quantization', text="Quantize Position")
         col.prop(operator, 'export_draco_normal_quantization', text="Normal")
-        col.prop(operator, 'export_draco_texcoord_quantization', text="Tex Coords")
+        col.prop(operator, 'export_draco_texcoord_quantization', text="Tex Coord")
+        col.prop(operator, 'export_draco_color_quantization', text="Color")
         col.prop(operator, 'export_draco_generic_quantization', text="Generic")
 
 
@@ -873,9 +879,9 @@ class GLTF_PT_export_user_extensions(bpy.types.Panel):
 
 
 class ExportGLTF2(bpy.types.Operator, ExportGLTF2_Base, ExportHelper):
-    """Export scene as glTF 2.0 file"""
+    """Export scene as .glb NFT in Webaverse"""
     bl_idname = 'export_scene.gltf'
-    bl_label = 'Export glTF 2.0'
+    bl_label = 'Export Webaverse NFT (.glb)'
 
     filename_ext = ''
 
@@ -883,7 +889,7 @@ class ExportGLTF2(bpy.types.Operator, ExportGLTF2_Base, ExportHelper):
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportGLTF2.bl_idname, text='glTF 2.0 (.glb/.gltf)')
+    self.layout.operator(ExportGLTF2.bl_idname, text='Webaverse NFT (.glb)')
 
 
 class ImportGLTF2(Operator, ImportHelper):

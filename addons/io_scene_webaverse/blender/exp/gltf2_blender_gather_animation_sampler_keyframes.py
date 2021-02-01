@@ -16,12 +16,12 @@ import bpy
 import mathutils
 import typing
 
-from io_scene_gltf2.blender.exp.gltf2_blender_gather_cache import cached, bonecache
-from io_scene_gltf2.blender.com import gltf2_blender_math
-from io_scene_gltf2.blender.exp import gltf2_blender_get
-from io_scene_gltf2.blender.exp.gltf2_blender_gather_drivers import get_sk_drivers, get_sk_driver_values
+from io_scene_webaverse.blender.exp.gltf2_blender_gather_cache import cached, bonecache
+from io_scene_webaverse.blender.com import gltf2_blender_math
+from io_scene_webaverse.blender.exp import gltf2_blender_get
+from io_scene_webaverse.blender.exp.gltf2_blender_gather_drivers import get_sk_drivers, get_sk_driver_values
 from . import gltf2_blender_export_keys
-from io_scene_gltf2.io.com import gltf2_io_debug
+from io_scene_webaverse.io.com import gltf2_io_debug
 
 
 class Keyframe:

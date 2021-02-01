@@ -17,14 +17,14 @@ import typing
 import os
 
 from . import gltf2_blender_export_keys
-from io_scene_gltf2.io.com import gltf2_io
-from io_scene_gltf2.blender.exp import gltf2_blender_search_node_tree
-from io_scene_gltf2.io.exp import gltf2_io_binary_data
-from io_scene_gltf2.io.exp import gltf2_io_image_data
-from io_scene_gltf2.io.com import gltf2_io_debug
-from io_scene_gltf2.blender.exp.gltf2_blender_image import Channel, ExportImage, FillImage
-from io_scene_gltf2.blender.exp.gltf2_blender_gather_cache import cached
-from io_scene_gltf2.io.exp.gltf2_io_user_extensions import export_user_extensions
+from io_scene_webaverse.io.com import gltf2_io
+from io_scene_webaverse.blender.exp import gltf2_blender_search_node_tree
+from io_scene_webaverse.io.exp import gltf2_io_binary_data
+from io_scene_webaverse.io.exp import gltf2_io_image_data
+from io_scene_webaverse.io.com import gltf2_io_debug
+from io_scene_webaverse.blender.exp.gltf2_blender_image import Channel, ExportImage, FillImage
+from io_scene_webaverse.blender.exp.gltf2_blender_gather_cache import cached
+from io_scene_webaverse.io.exp.gltf2_io_user_extensions import export_user_extensions
 
 
 @cached
@@ -182,7 +182,7 @@ def __get_image_data(sockets, export_settings) -> ExportImage:
             dst_chan = Channel.G
         elif socket.name == 'Occlusion':
             dst_chan = Channel.R
-        elif socket.name == 'Alpha' and len(sockets) > 1 and sockets[1] is not None:
+        elif socket.name == 'Alpha':
             dst_chan = Channel.A
         elif socket.name == 'Clearcoat':
             dst_chan = Channel.R

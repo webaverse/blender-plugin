@@ -17,17 +17,17 @@ import typing
 
 import bpy
 import mathutils
-from io_scene_gltf2.blender.com import gltf2_blender_math
-from io_scene_gltf2.blender.com.gltf2_blender_data_path import get_target_property_name, get_target_object_path
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_animation_sampler_keyframes
-from io_scene_gltf2.blender.exp.gltf2_blender_gather_cache import cached
-from io_scene_gltf2.blender.exp import gltf2_blender_gather_accessors
-from io_scene_gltf2.blender.exp import gltf2_blender_get
-from io_scene_gltf2.io.com import gltf2_io
-from io_scene_gltf2.io.com import gltf2_io_constants
-from io_scene_gltf2.io.exp import gltf2_io_binary_data
+from io_scene_webaverse.blender.com import gltf2_blender_math
+from io_scene_webaverse.blender.com.gltf2_blender_data_path import get_target_property_name, get_target_object_path
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_animation_sampler_keyframes
+from io_scene_webaverse.blender.exp.gltf2_blender_gather_cache import cached
+from io_scene_webaverse.blender.exp import gltf2_blender_gather_accessors
+from io_scene_webaverse.blender.exp import gltf2_blender_get
+from io_scene_webaverse.io.com import gltf2_io
+from io_scene_webaverse.io.com import gltf2_io_constants
+from io_scene_webaverse.io.exp import gltf2_io_binary_data
 from . import gltf2_blender_export_keys
-from io_scene_gltf2.io.exp.gltf2_io_user_extensions import export_user_extensions
+from io_scene_webaverse.io.exp.gltf2_io_user_extensions import export_user_extensions
 
 
 @cached
