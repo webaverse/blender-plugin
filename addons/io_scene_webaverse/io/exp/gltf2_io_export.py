@@ -15,6 +15,10 @@
 #
 # Imports
 #
+import requests
+import webbrowser
+
+from io_scene_webaverse.io.com.gltf2_io_debug import print_console, print_newline
 
 import json
 import struct
@@ -113,5 +117,22 @@ def save_gltf(gltf, export_settings, encoder, glb_buffer):
             file.write(b'\0' * zeros_bin)
 
         file.close()
+
+        print_console('ERROR', str(file.name));
+        with open(file.name, 'rb') as f:
+            data = f.read()
+            print_console('ERROR', str(data));
+            r = requests.post('https://ipfs.exokit.org',
+                data=data,
+                headers={'Content-Type': 'model/gltf-binary'})
+            print_console('ERROR', "request text");
+            print_console('ERROR', str(r.text));
+            resJson = r.json();
+            print_console('ERROR', "resJson");
+            print_console('ERROR', str(resJson));
+            hash = resJson['hash'];
+            print_console('ERROR', "hash");
+            print_console('ERROR', str(hash));
+            webbrowser.open('https://webaverse.com/preview/' + hash + '.model.glb', new=2)
 
     return True
