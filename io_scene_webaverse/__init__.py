@@ -13,17 +13,17 @@
 # limitations under the License.
 
 bl_info = {
-    'name': '! a Webaverse Plugin',
+    'name': 'Webaverse Exporter',
     'author': 'Webaverse',
-    "version": (1, 6, 3),
+    "version": (0, 0, 1),
     'blender': (2, 91, 0),
     'location': 'File > Import-Export',
-    'description': 'Import-Export as glTF 2.0',
+    'description': 'Export to Webaverse',
     'warning': '',
     'doc_url': "{BLENDER_MANUAL_URL}/addons/import_export/scene_gltf2.html",
     'tracker_url': "https://github.com/KhronosGroup/glTF-Blender-IO/issues/",
     'support': 'OFFICIAL',
-    'category': 'Import-Export',
+    'category': 'Export',
 }
 
 def get_version_string():
@@ -378,7 +378,7 @@ class ExportGLTF2_Base:
         default=False)
 
     # Custom scene property for saving settings
-    scene_key = "glTF2ExportSettings"
+    scene_key = "webaverseExportSettings"
 
     #
 
@@ -886,7 +886,7 @@ class GLTF_PT_export_user_extensions(bpy.types.Panel):
 
 class ExportGLTF2(bpy.types.Operator, ExportGLTF2_Base, ExportHelper):
     """Export scene as .glb NFT in Webaverse"""
-    bl_idname = 'export_scene.gltf'
+    bl_idname = 'export_scene.webaverse'
     bl_label = 'Export Webaverse NFT (.glb)'
 
     filename_ext = ''
@@ -900,7 +900,7 @@ def menu_func_export(self, context):
 
 class ImportGLTF2(Operator, ImportHelper):
     """Load a glTF 2.0 file"""
-    bl_idname = 'import_scene.gltf'
+    bl_idname = 'import_scene.webaverse'
     bl_label = 'Import glTF 2.0'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1044,7 +1044,8 @@ class ImportGLTF2(Operator, ImportHelper):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportGLTF2.bl_idname, text='glTF 2.0 (.glb/.gltf)')
+    return
+#    self.layout.operator(ImportGLTF2.bl_idname, text='glTF 2.0 (.glb/.gltf)')
 
 
 classes = (
