@@ -12,6 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any, Set, cast
+
+import bpy
+from bpy.app.handlers import persistent
+
+from io_scene_webaverse.vrm import editor, exporter, importer, shader, version
+from io_scene_webaverse.vrm.editor import glsl_drawer, make_armature, vrm_helper
+from io_scene_webaverse.vrm.exporter import validation
+from io_scene_webaverse.vrm.lang import translation_dictionary
+from io_scene_webaverse.vrm.preferences import (
+    VrmAddonPreferences,
+    addon_package_name,
+    use_experimental_vrm_component_ui,
+)
+
 bl_info = {
     'name': 'Webaverse Exporter',
     'author': 'Webaverse',
@@ -897,6 +912,8 @@ class ExportGLTF2(bpy.types.Operator, ExportGLTF2_Base, ExportHelper):
 def menu_func_export(self, context):
     self.layout.operator(ExportGLTF2.bl_idname, text='Webaverse NFT (.glb)')
 
+def menu_func_export2(self, context):
+    self.layout.operator(ExportGLTF2.bl_idname, text='Webaverse Avatar (.vrm)')
 
 class ImportGLTF2(Operator, ImportHelper):
     """Load a glTF 2.0 file"""
@@ -1047,6 +1064,23 @@ def menu_func_import(self, context):
     return
 #    self.layout.operator(ImportGLTF2.bl_idname, text='glTF 2.0 (.glb/.gltf)')
 
+class WM_OT_gltf2AddonDisabledWarning(bpy.types.Operator):  # type: ignore[misc] # noqa: N801
+    bl_label = "glTF 2.0 add-on is disabled"
+    bl_idname = "wm.gltf2_addon_disabled_warning"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context: bpy.types.Context) -> Set[str]:
+        return {"FINISHED"}
+
+    def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> Set[str]:
+        return cast(
+            Set[str], context.window_manager.invoke_props_dialog(self, width=500)
+        )
+
+    def draw(self, context: bpy.types.Context) -> None:
+        self.layout.label(
+            text='Official add-on "glTF 2.0 format" is required. Please enable it.'
+        )
 
 classes = (
     ExportGLTF2,
@@ -1060,9 +1094,57 @@ classes = (
     GLTF_PT_export_animation_shapekeys,
     GLTF_PT_export_animation_skinning,
     GLTF_PT_export_user_extensions,
-    ImportGLTF2
+    ImportGLTF2,
+
+    VrmAddonPreferences,
+    importer.LicenseConfirmation,
+    importer.WM_OT_licenseConfirmation,
+    WM_OT_gltf2AddonDisabledWarning,
+    vrm_helper.Bones_rename,
+    vrm_helper.Add_VRM_extensions_to_armature,
+    vrm_helper.Add_VRM_require_humanbone_custom_property,
+    vrm_helper.Add_VRM_defined_humanbone_custom_property,
+    vrm_helper.Vroid2VRC_lipsync_from_json_recipe,
+    validation.VrmValidationError,
+    validation.WM_OT_vrmValidator,
+    importer.ImportVRM,
+    exporter.ExportVRM,
+    exporter.VRM_IMPORTER_PT_export_error_messages,
+    editor.VRM_IMPORTER_PT_controller,
+    make_armature.ICYP_OT_MAKE_ARMATURE,
+    glsl_drawer.ICYP_OT_Draw_Model,
+    glsl_drawer.ICYP_OT_Remove_Draw_Model,
+    # detail_mesh_maker.ICYP_OT_DETAIL_MESH_MAKER,
+    # blend_model.ICYP_OT_select_helper,
+    # mesh_from_bone_envelopes.ICYP_OT_MAKE_MESH_FROM_BONE_ENVELOPES
+    editor.HUMANOID_PARAMS,
+    editor.LOOKAT_CURVE,
+    editor.MESH_ANNOTATION,
+    editor.FIRSTPERSON_PARAMS,
+    editor.BLENDSHAPE_BIND,
+    editor.BLENDSHAPE_MATERIAL_BIND,
+    editor.BLENDSHAPE_GROUP,
+    editor.COLLIDER_GROUP,
+    editor.BONE_GROUP,
+    editor.SPRING_BONE_GROUP,
+    editor.METAS,
+    editor.REQUIRED_METAS,
 )
 
+
+def add_shaders(self: Any) -> None:
+        shader.add_shaders(self)
+
+def set_use_experimental_vrm_component_ui(enable: bool) -> None:
+    has_props = hasattr(bpy.types.Object, "vrm_props")
+    if enable and not has_props:
+        for cls in experimental_vrm_component_ui_classes:
+            bpy.utils.register_class(cls)
+        bpy.types.Object.vrm_props = bpy.props.PointerProperty(type=editor.VRMProps)
+    elif not enable and has_props:
+        del bpy.types.Object.vrm_props
+        for cls in experimental_vrm_component_ui_classes:
+            bpy.utils.unregister_class(cls)
 
 def register():
     for c in classes:
@@ -1071,7 +1153,18 @@ def register():
 
     # add to the export / import menu
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
-    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    # bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+
+    # bpy.types.TOPBAR_MT_file_import.append(importer.menu_import)
+    bpy.types.TOPBAR_MT_file_export.append(exporter.menu_export)
+    bpy.types.VIEW3D_MT_armature_add.append(editor.add_armature)
+    # bpy.types.VIEW3D_MT_mesh_add.append(editor.make_mesh)
+    bpy.app.handlers.load_post.append(add_shaders)
+    bpy.app.translations.register(addon_package_name, translation_dictionary)
+
+    set_use_experimental_vrm_component_ui(
+        use_experimental_vrm_component_ui(bpy.context)
+    )
 
 
 def unregister():
@@ -1085,4 +1178,11 @@ def unregister():
 
     # remove from the export / import menu
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    # bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+
+    bpy.app.translations.unregister(addon_package_name)
+    bpy.app.handlers.load_post.remove(add_shaders)
+    bpy.types.VIEW3D_MT_armature_add.remove(editor.add_armature)
+    # bpy.types.VIEW3D_MT_mesh_add.remove(editor.make_mesh)
+    # bpy.types.TOPBAR_MT_file_import.remove(importer.menu_import)
+    bpy.types.TOPBAR_MT_file_export.remove(exporter.menu_export)

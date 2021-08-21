@@ -118,10 +118,10 @@ def save_gltf(gltf, export_settings, encoder, glb_buffer):
 
         file.close()
 
-        print_console('ERROR', str(file.name));
         with open(file.name, 'rb') as f:
             data = f.read()
-            print_console('ERROR', str(data));
+            print_console('INFO', "upload size: " + str(len(data)));
+            # print_console('ERROR', str(data));
             r = requests.post('https://ipfs.exokit.org',
                 data=data,
                 headers={'Content-Type': 'model/gltf-binary'})
@@ -133,6 +133,6 @@ def save_gltf(gltf, export_settings, encoder, glb_buffer):
             hash = resJson['hash'];
             print_console('ERROR', "hash");
             print_console('ERROR', str(hash));
-            webbrowser.open('https://webaverse.com/preview/' + hash + '.model.glb', new=2)
+            webbrowser.open('https://app.webaverse.com/preview.html?hash=' + hash + '&ext=glb', new=2)
 
     return True
