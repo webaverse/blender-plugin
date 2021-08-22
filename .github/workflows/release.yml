@@ -11,7 +11,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Zip release
         run: zip -r io_scene_webaverse.zip io_scene_webaverse
-     - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: "Create release"
+        run: |
+          echo "done!"
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ github.ref }}
