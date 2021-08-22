@@ -3,7 +3,7 @@
 Direct export from Blender to the Webaverse sidechain as a NFT (non-fungible token).
 
 ## 1. Download the add-on
-[Download the latest version here](https://github.com/webaverse/blender-plugin/raw/master/io_scene_webaverse.zip).
+[Download the latest .zip here](The plugin has been actively worked on recently, I would try using the `io_scene_webaverse.zip` from the releases here: https://github.com/webaverse/blender-plugin/releases).
 
 ## 2. Install the add-on
 
